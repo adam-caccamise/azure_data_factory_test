@@ -1,0 +1,51 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/blob_to_sql_success_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Send Email",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-05.centralus.logic.azure.com:443/workflows/bae89049445e4261be11250f01436765/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=UehTAZYDgSaNJitHSwh_nqSlBLt0fQpplpGBYw5WjKU",
+							"method": "POST",
+							"body": {
+								"DataFactoryName": "@{pipeline().DataFactory}",
+								"PipelineName": "@{pipeline().Pipeline}",
+								"Subject": "Blob to SQL Success",
+								"ErrorMessage": "Blob to SQL Sucess.",
+								"EmailTo": "POS_DIST@mail.bradycorp.com"
+							}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-01-28T20:02:11Z"
+			},
+			"dependsOn": []
+		}
+	]
+}
